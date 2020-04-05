@@ -1,5 +1,8 @@
 import os
 
-os.system( "git add .&& git commit -m\"autoloaded\"&&git push")
+'''
+Run this file in the command line and the project will be automatically uploaded to git
+EX: python3 AutoUploader.py
+'''
 
-
+os.system("git add .&& git commit -m\"autoloaded\"&&git push")
