@@ -5,4 +5,4 @@ Run this file in the command line and the project will be automatically uploaded
 EX: python3 AutoUploader.py
 '''
 
-os.system("git add .&& git commit -m\"autoloaded\"&&git push")
+os.system("git pull && git add .&& git commit -m\"autoloaded\"&&git push")
