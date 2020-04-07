@@ -3,9 +3,9 @@ import time
 
 
 def main():
-    interval = .75
-    runtime = 20
-    pin_num = 9
+    interval = float(input('At what interval (in seconds) would you like to collect data?: '))
+    runtime = int(input('What would you like the total runtime to be (in seconds)?: '))
+    pin_num = 9 # Must be hard coded
     
     GPIO.setwarnings(False)
     GPIO.setmode(GPIO.BCM)                              # Note uses BCM instead of BOARD!!!
