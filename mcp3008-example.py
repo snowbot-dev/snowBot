@@ -14,6 +14,8 @@ import Adafruit_MCP3008         # Import Adafruit_MCP3008
 # use regular GPIO pins. Hardware SPI uses the SPI pins on the Raspberry PI
 # Set the following variable to either HW or SW for Hardware SPI and Software
 # SPI respectivly.
+
+#PIN IS 6 AS A PARAMETER
 SPI_TYPE = 'HW'
 dly = .5         # Delay of 1000ms (1 second)
 
@@ -24,7 +26,7 @@ MOSI    = 24    # Set the Master Output/Slave Input pin
 CS      = 25    # Set the Slave Select
 
 # Hardware SPI Configuration
-HW_SPI_PORT = 0 # Set the SPI Port. Raspi has two.
+HW_SPI_PORT =0 # Set the SPI Port. Raspi has two.
 HW_SPI_DEV  = 0 # Set the SPI Device
 
 # Instantiate the mcp class from Adafruit_MCP3008 module and set it to 'mcp'. 
@@ -37,20 +39,19 @@ elif (SPI_TYPE == 'SW'):
 
 # Check to see if we have input from command line. Bail if we dont.
 if ( len(sys.argv) <= 1):
-    print "Usage: MCP3008-example.py <Analog Port>"
+    print ("Usage: MCP3008-example.py <Analog Port>")
     sys.exit(1)
 else:
     analogPort = int(sys.argv[1])
 
-print 'Reading MCP3008 values on pin: %d' % analogPort
+print ('Reading MCP3008 values on pin: %d' % analogPort)
 
 try:
     while True:
         # Read the value from the MCP3008 on the pin we specified in analogPort
         val = mcp.read_adc(analogPort)
-
         # print out the value
-        print val
+        print (val)
 
         # Sleep for dly
         sleep(dly)
