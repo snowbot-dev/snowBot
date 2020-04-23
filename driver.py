@@ -11,6 +11,8 @@ def main():
     runtime = int(input('What would you like the total runtime to be (in seconds)?: '))
     pin_num = 6  # Must be hard coded
 
+    data = collect_data(interval, runtime, pin_num)
+
     if data != -1:
         filename = input("What name would you like to give the file (ex: test.csv)?: ")
         save_data(data, filename, '../data/')  # saves the data to a file
