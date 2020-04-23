@@ -1,35 +1,33 @@
-import sys                      # Import sys module
-from time import sleep          # Import sleep from time
+import Plot
+import Sensors.picam as picam
+import Sensors.picam360 as picam360
+from time import sleep
+import sys
 import Adafruit_GPIO.SPI as SPI # Import Adafruit GPIO_SPI Module
 import Adafruit_MCP3008         # Import Adafruit_MCP3008
-
-import time
-
 
 def main():
     interval = float(input('At what interval (in seconds) would you like to collect data?: '))
     runtime = int(input('What would you like the total runtime to be (in seconds)?: '))
-    pin_num = 6 # Must be hard coded
-
-    data = collect_data(interval, runtime, pin_num)
+    pin_num = 6  # Must be hard coded
 
     if data != -1:
         filename = input("What name would you like to give the file (ex: test.csv)?: ")
-        save_data_to_csv(data, filename, '../data/') # saves the data to a file
+        save_data(data, filename, '../data/')  # saves the data to a file
 
 
 def collect_data(interval, runtime, pin_num):
     '''
-    params
-    interval in seconds can be an int or float
-    runtime how long you want to collect data (if runtime = -1 it will continue until you C-c out)
-    
-    data will only be collected if interval < runtime, interval > 0, and runtime != -1
+       params
+       interval in seconds can be an int or float
+       runtime how long you want to collect data (if runtime = -1 it will continue until you C-c out)
 
-    ret
-    data is interval at idx 0 then collected data is at data[1:]
-    if data is not collected retruns -1
-    '''
+       data will only be collected if interval < runtime, interval > 0, and runtime != -1
+
+       ret
+       data is interval at idx 0 then collected data is at data[1:]
+       if data is not collected retruns -1
+       '''
     # We can either use Software SPI or Hardware SPI. For software SPI we will
     # use regular GPIO pins. Hardware SPI uses the SPI pins on the Raspberry PI
     # Set the following variable to either HW or SW for Hardware SPI and Software
@@ -88,22 +86,9 @@ def collect_data(interval, runtime, pin_num):
     return data
 
 
-def save_data_to_csv(data, name, path):
-    '''
-    params
-    data should be a list
-    name is a string of what you want the file to be named
-    path is a string where you want the csv file to be saved
+def save_data(data, filename, path):
 
-    ex: save_data_to_csv([3,2,1], text.csv, ../data/) will save a file named test.csv
-    to the dir the is 1 dir back and then into the data dir and it will contain 3,2,1
-    '''
-    f = open(path+name, 'w')
-    data = str(data)[1:-1]
-    f.write(data)
 
-    
-if __name__=='__main__':
+
+if __name__ == '__main__':
     main()
-
-
