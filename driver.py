@@ -14,9 +14,11 @@ def main():
     interval = float(input('At what interval (in seconds) would you like to collect data?: '))
     runtime = int(input('What would you like the total runtime to be (in seconds)?: '))
     filename = input("What name would you like to give the file/ what dir (ex: test.csv)?: ")
+    store_dir = input("Name dir inside of data where data will be stored (ex: if you want data/date/p.csv type date)")
     pin_num = 6  # Must be hard coded
-
-    filename = 'data/' + filename
+    os.system('mkdir ' + 'data/' + store_dir)
+    
+    filename = 'data/' + store_dir + filename
     data = collect_data(interval, runtime, pin_num, filename, camera)
     if data != -1:
         save_data(data, filename)  # saves the data to a file
