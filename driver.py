@@ -5,20 +5,23 @@ from time import sleep
 import sys
 import Adafruit_GPIO.SPI as SPI # Import Adafruit GPIO_SPI Module
 import Adafruit_MCP3008         # Import Adafruit_MCP3008
+import os
+from picamera import PiCamera
 
 def main():
+    camera = PiCamera()
     interval = float(input('At what interval (in seconds) would you like to collect data?: '))
     runtime = int(input('What would you like the total runtime to be (in seconds)?: '))
+    filename = input("What name would you like to give the file/ what dir (ex: test.csv)?: ")
     pin_num = 6  # Must be hard coded
 
-    data = collect_data(interval, runtime, pin_num)
-
+    filename = 'data/' + filename
+    data = collect_data(interval, runtime, pin_num, filename, camera)
     if data != -1:
-        filename = input("What name would you like to give the file (ex: test.csv)?: ")
-        save_data(data, filename, '../data/')  # saves the data to a file
+        save_data(data, filename)  # saves the data to a file
 
 
-def collect_data(interval, runtime, pin_num):
+def collect_data(interval, runtime, pin_num, filename, camera):
     '''
        params
        interval in seconds can be an int or float
@@ -64,12 +67,14 @@ def collect_data(interval, runtime, pin_num):
     data = [interval]
     try:
         if runtime == -1:
+            i = 0
             while True:
                 # Read the value from the MCP3008 on the pin we specified in analogPort
                 val = mcp.read_adc(analogPort)
                 # print out the value
                 print(val)
-
+                camera.capture(filename +str(i)+".jpg")
+                i+=1
                 # Sleep for dly
                 sleep(dly)
         else:
@@ -88,9 +93,20 @@ def collect_data(interval, runtime, pin_num):
     return data
 
 
-def save_data(data, filename, path):
+def save_data(data, filename):
+    '''
+    params
+    data should be a list
+    name is a string of what you want the file to be named
+    path is a string where you want the csv file to be saved
 
-
+    ex: save_data_to_csv([3,2,1], text.csv, ../data/) will save a file named test.csv
+    to the dir the is 1 dir back and then into the data dir and it will contain 3,2,1
+    '''
+    f = open(filename, 'w')
+    data = str(data)[1:-1]
+    f.write(data)
+    Plot.main()
 
 if __name__ == '__main__':
     main()
