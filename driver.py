@@ -3,10 +3,11 @@ import Sensors.picam as picam
 import Sensors.picam360 as picam360
 from time import sleep
 import sys
-import Adafruit_GPIO.SPI as SPI # Import Adafruit GPIO_SPI Module
-import Adafruit_MCP3008         # Import Adafruit_MCP3008
+import Adafruit_GPIO.SPI as SPI  # Import Adafruit GPIO_SPI Module
+import Adafruit_MCP3008  # Import Adafruit_MCP3008
 import os
 from picamera import PiCamera
+
 
 def main():
     camera = PiCamera()
@@ -67,27 +68,27 @@ def collect_data(interval, runtime, pin_num, filename, camera):
     data = [interval]
     try:
         if runtime == -1:
-            i = 0
             while True:
                 # Read the value from the MCP3008 on the pin we specified in analogPort
                 val = mcp.read_adc(analogPort)
                 # print out the value
                 print(val)
-                camera.capture(filename +str(i)+".jpg")
-                i+=1
                 # Sleep for dly
                 sleep(dly)
         else:
             t = 0
+            i = 0
             while t < runtime:
                 # Read the value from the MCP3008 on the pin we specified in analogPort
                 val = mcp.read_adc(analogPort)
                 # print out the value
                 print(val)
                 data.append(val)
+                camera.capture(filename + str(i) + ".jpg")
                 # Sleep for dly
                 sleep(dly)
                 t += interval
+                i += 1
     except KeyboardInterrupt:
         sys.exit()
     return data
@@ -106,7 +107,9 @@ def save_data(data, filename):
     f = open(filename, 'w')
     data = str(data)[1:-1]
     f.write(data)
+    f.close()
     Plot.main()
+
 
 if __name__ == '__main__':
     main()
