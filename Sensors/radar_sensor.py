@@ -6,7 +6,6 @@ import Adafruit_MCP3008         # Import Adafruit_MCP3008
 import time
 
 
-
 def main():
     interval = float(input('At what interval (in seconds) would you like to collect data?: '))
     runtime = int(input('What would you like the total runtime to be (in seconds)?: '))
@@ -16,7 +15,7 @@ def main():
 
     if data != -1:
         filename = input("What name would you like to give the file (ex: test.csv)?: ")
-        save_data_to_csv(data, filename, '../data/') # saves the data to a file
+        save_data_to_csv(data, filename, 'data/') # saves the data to a file
 
 
 def collect_data(interval, runtime, pin_num):
