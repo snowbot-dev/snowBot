@@ -45,8 +45,8 @@ def plot():
 
     save = input('Do you want to save the plot? (yes/no): ')
     if save.lower() == 'yes' or save.lower() == 'y':
-        save_dir = input('Where do you want this data to be stored?: ')
-        plt.savefig(save_dir)
+        save_dir = input('Where do you want this data to be stored? (Image will be in data dir): ')
+        plt.savefig('data/'+save_dir)
 
     show = input('Do you want to show the plot? (yes/no): ')
     if show.lower() == 'yes' or show.lower() == 'y':

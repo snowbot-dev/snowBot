@@ -2,7 +2,7 @@ import sys                      # Import sys module
 from time import sleep          # Import sleep from time
 import Adafruit_GPIO.SPI as SPI # Import Adafruit GPIO_SPI Module
 import Adafruit_MCP3008         # Import Adafruit_MCP3008
-
+import os
 import time
 
 
