@@ -1,12 +1,16 @@
 import RPi.GPIO as GPIO
 import time
-GPIO.setmode(GPIO.BCM)
-GPIO.setup(4, GPIO.IN, pull_up_down=GPIO.PUD_DOWN)
-start = time.time() 
-inp = input("How many seconds?: ")
-while (time.time() < start+inp):
-   print( GPIO.input(4))
+sensor_input = 17
 
+GPIO.setmode(GPIO.BCM)
+GPIO.setup(sensor_input, GPIO.IN))
+try:
+   while True:
+      if GPIO.input(sensor_input):
+         print('detected')
+         time.sleep(.5)
+except KeyboardInterrupt:
+   GPIO.cleanup()
 '''
 sudo apt-get update
 sudo apt-get install python-dev python-pip
