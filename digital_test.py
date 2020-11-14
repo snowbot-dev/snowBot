@@ -3,8 +3,8 @@ import time
 GPIO.setmode(GPIO.BCM)
 GPIO.setup(4, GPIO.IN, pull_up_down=GPIO.PUD_DOWN)
 start = time.time() 
-in = input("How many seconds?: ")
-while (time.time() < start+in):
+inp = input("How many seconds?: ")
+while (time.time() < start+inp):
    print( GPIO.input(4))
 
 '''
