@@ -3,12 +3,14 @@ import time
 sensor_input = 4
 
 GPIO.setmode(GPIO.BCM)
-GPIO.setup(sensor_input, GPIO.IN))
+GPIO.setup(sensor_input, GPIO.IN)
 try:
    while True:
       if GPIO.input(sensor_input):
          print('detected')
-         time.sleep(.5)
+         #time.sleep(.5)
+      else:
+         print('NOPE') 
 except KeyboardInterrupt:
    GPIO.cleanup()
 '''
