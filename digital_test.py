@@ -3,7 +3,7 @@ import time
 sensor_input = 4
 
 GPIO.setmode(GPIO.BCM)
-GPIO.setup(sensor_input, GPIO.IN))
+GPIO.setup(sensor_input, GPIO.IN)
 
 sec = float(input('Interval in seconds: '))
 data = [sec]
