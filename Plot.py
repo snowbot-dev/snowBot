@@ -10,7 +10,6 @@ if the path of the file is "data/date/file.csv" you need "date/file.csv")
 (it will be converted into a float either way)
 '''
 
-# This is a test for git
 
 def main():
     plot()
