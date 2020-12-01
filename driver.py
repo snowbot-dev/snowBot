@@ -6,25 +6,28 @@ import sys
 import Adafruit_GPIO.SPI as SPI  # Import Adafruit GPIO_SPI Module
 import Adafruit_MCP3008  # Import Adafruit_MCP3008
 import os
-from picamera import PiCamera
+#from picamera import PiCamera
 
 
 def main():
-    camera = PiCamera()
+    #camera = PiCamera()
     interval = float(input('At what interval (in seconds) would you like to collect data?: '))
     runtime = int(input('What would you like the total runtime to be (in seconds)?: '))
     filename = input("What name would you like to give the file/ what dir (ex: test.csv)?: ")
-    store_dir = input("Name dir inside of data where data will be stored (ex: if you want data/date/p.csv type date)")
     pin_num = 6  # Must be hard coded
-    os.system('mkdir ' + 'data/' + store_dir)
-    
-    filename = 'data/' + store_dir + filename
-    data = collect_data(interval, runtime, pin_num, filename, camera)
+
+    filename = 'data/' + filename
+    #data = collect_data(interval, runtime, pin_num, filename, camera)
+    data = collect_data(interval, runtime, pin_num, filename)
+
     if data != -1:
+
         save_data(data, filename)  # saves the data to a file
 
 
-def collect_data(interval, runtime, pin_num, filename, camera):
+#def collect_data(interval, runtime, pin_num, filename, camera):
+def collect_data(interval, runtime, pin_num, filename):
+
     '''
        params
        interval in seconds can be an int or float
@@ -86,7 +89,7 @@ def collect_data(interval, runtime, pin_num, filename, camera):
                 # print out the value
                 print(val)
                 data.append(val)
-                camera.capture(filename + str(i) + ".jpg")
+                os.system("fswebcam " + filename + str(i) + ".jpg")
                 # Sleep for dly
                 sleep(dly)
                 t += interval
