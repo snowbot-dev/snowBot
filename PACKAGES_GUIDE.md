@@ -3,6 +3,7 @@
 For managing pip packages I strongly recommend creating and using a virtual environment. Think of it as a container for all your needed pip packages for snowBot (compared to globally installing pip packages). Command line arguments given are for Windows.
 
 Create a virtual environment from the root of the project directory,
+
 `python -m venv .env`
 
 Activate it,
