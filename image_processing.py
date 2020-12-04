@@ -5,8 +5,12 @@ from math import atan, pi
 
 
 def main():
-    img = read_image('images/test360Image.png')
+
+    img = read_image('images/test360image.png')
     show_image(img)
+    cropped_img = crop_image(img)
+    show_image(cropped_img)
+    print(cropped_img.shape)
     # try_out_find_angle()
 
 
@@ -98,7 +102,15 @@ def try_out_find_angle():
     print('W:', find_angle_of_pixel((0, 2), (2, 2)))
     print('Q4:', find_angle_of_pixel((1, 1), (2, 2)))
 
-
+def crop_image(img):
+    '''
+    Crops out deadspace from input image. Function does not save image.
+        Parameters:
+            img (np.ndarray): Image to crop
+        Returns:
+            cropped_img (np.ndarray): Cropped image
+    '''
+    return img[10:-20,90:-140].copy()
 if __name__ == '__main__':
     a = np.array([[1, 1, 1],
                   [2, 2, 2],
