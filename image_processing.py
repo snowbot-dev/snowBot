@@ -5,6 +5,7 @@ from math import atan, pi
 
 
 def main():
+
     img = read_image('images/test360image.png')
     show_image(img)
     cropped_img = crop_image(img)
@@ -85,6 +86,12 @@ def find_angle_of_pixel(locate_pixel, center_pixel):
     return '???'
 
 
+def slice_circle(circle_matrix):
+    return np.vsplit(circle_matrix, 2)
+
+def flatten_semi_circle(semi_circle_matrix):
+    return semi_circle_matrix.max(axis=1)
+
 def try_out_find_angle():
     print('N:', find_angle_of_pixel((2, 0), (2, 2)))
     print('Q1:', find_angle_of_pixel((3, 1), (2, 2)))
@@ -105,4 +112,10 @@ def crop_image(img):
     '''
     return img[10:-20,90:-140].copy()
 if __name__ == '__main__':
+    a = np.array([[1, 1, 1],
+                  [2, 2, 2],
+                  [3, 3, 3],
+                  [4, 4, 4],
+                  [5, 5, 5],
+                  [6, 6, 6]])
     main()
