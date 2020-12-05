@@ -1,16 +1,18 @@
 import numpy as np
 import cv2 as cv2
 from matplotlib import pyplot as plt
-from math import atan, pi
+from math import atan, pi, sqrt
 
 
 def main():
 
-    img = read_image('images/test360image.png')
-    show_image(img)
-    cropped_img = crop_image(img)
+    img_path = 'images/test360image.png'
+    img = read_image(img_path)
+    greyscale_img = cv2.imread(img_path,cv2.IMREAD_GRAYSCALE)
+    #show_image(img)
+    cropped_img = crop_image(greyscale_img)
     show_image(cropped_img)
-    print(cropped_img.shape)
+    show_image(semicircle_to_pyramid(cropped_img))
     # try_out_find_angle()
 
 
@@ -102,15 +104,43 @@ def try_out_find_angle():
     print('W:', find_angle_of_pixel((0, 2), (2, 2)))
     print('Q4:', find_angle_of_pixel((1, 1), (2, 2)))
 
-def crop_image(img):
+def crop_image(img: np.ndarray) -> np.ndarray:
     '''
-    Crops out deadspace from input image. Function does not save image.
+    Crops out deadspace from input image. Function does not save image and has no other side effects.
         Parameters:
             img (np.ndarray): Image to crop
         Returns:
             cropped_img (np.ndarray): Cropped image
     '''
     return img[10:-20,90:-140].copy()
+
+def semicircle_to_pyramid(img: np.ndarray) -> np.ndarray:
+    '''
+    Function to turn a semi circle into a pyramid for Tensorflow object detection. This app is for testing the methodology, 
+    not for production purposes.
+        Parameters:
+            img (np.ndarray): Input image.
+        Returns:
+            pyramid_img (np.ndarray): Pyramid representation of the lower half of the img.
+
+    '''
+    def shift_amount(x:int)->int:
+        '''
+        Calculates amount of pixels to shift based on the x coordinate on the diameter of the semicircle.
+            Parameters:
+                x(int): x coordinate on the diameter.
+            Returns:
+                shift(int): Amount of pixels needed to shift array.
+        '''
+        delta_x = int(abs(285-x))
+        return 285 - int(sqrt(285**2 - delta_x**2))
+    
+    bottom_semicircle: np.ndarray= img[285:-1,0:-1].T.copy()
+    for i,row in enumerate(bottom_semicircle):
+        shift = shift_amount(i)
+        bottom_semicircle[i] = np.roll(bottom_semicircle[i],shift,axis=0)
+    return bottom_semicircle.T
+
 if __name__ == '__main__':
     a = np.array([[1, 1, 1],
                   [2, 2, 2],
@@ -118,4 +148,6 @@ if __name__ == '__main__':
                   [4, 4, 4],
                   [5, 5, 5],
                   [6, 6, 6]])
+    roll_test = np.roll(np.arange(9,dtype='int8').reshape(3,3),1,axis=0)
+    print(roll_test)
     main()
