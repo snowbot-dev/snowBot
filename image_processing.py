@@ -10,9 +10,11 @@ def main():
     img = read_image(img_path)
     greyscale_img = cv2.imread(img_path,cv2.IMREAD_GRAYSCALE)
     #show_image(img)
-    cropped_img = crop_image(greyscale_img)
+    cropped_img = crop_image(img)
     show_image(cropped_img)
+    write_image(cropped_img, 'testC.png')
     show_image(semicircle_to_pyramid(cropped_img))
+    write_image(semicircle_to_pyramid(cropped_img), 'test1C.png')
     # try_out_find_angle()
 
 
@@ -44,7 +46,8 @@ def write_image(img, img_saving_path):
     """
     if isinstance(img, list):
         img = np.asarray(img, dtype=np.uint8)
-    else:
+    elif not isinstance(img, np.ndarray):
+        print(type(img))
         raise TypeError("img is neither a list nor a ndarray.")
 
     cv2.imwrite(img_saving_path, img)
@@ -136,9 +139,16 @@ def semicircle_to_pyramid(img: np.ndarray) -> np.ndarray:
         return 285 - int(sqrt(285**2 - delta_x**2))
     
     bottom_semicircle: np.ndarray= img[285:-1,0:-1].T.copy()
-    for i,row in enumerate(bottom_semicircle):
-        shift = shift_amount(i)
-        bottom_semicircle[i] = np.roll(bottom_semicircle[i],shift,axis=0)
+
+    if len(bottom_semicircle) == 3:
+        for c in range(len(bottom_semicircle)):
+            for i in range(len(bottom_semicircle[0])):
+                shift = shift_amount(i)
+                bottom_semicircle[c][i] = np.roll(bottom_semicircle[c][i], shift, axis=0)
+    else:
+        for i,row in enumerate(bottom_semicircle):
+            shift = shift_amount(i)
+            bottom_semicircle[i] = np.roll(bottom_semicircle[i],shift,axis=0)
     return bottom_semicircle.T
 
 if __name__ == '__main__':
@@ -148,6 +158,6 @@ if __name__ == '__main__':
                   [4, 4, 4],
                   [5, 5, 5],
                   [6, 6, 6]])
-    roll_test = np.roll(np.arange(9,dtype='int8').reshape(3,3),1,axis=0)
-    print(roll_test)
+    # roll_test = np.roll(np.arange(9,dtype='int8').reshape(3,3),1,axis=0)
+    # print(roll_test)
     main()
