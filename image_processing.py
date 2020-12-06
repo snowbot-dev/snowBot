@@ -139,14 +139,14 @@ def semicircle_to_pyramid(img: np.ndarray) -> np.ndarray:
         return 285 - int(sqrt(285**2 - delta_x**2))
     
     bottom_semicircle: np.ndarray= img[285:-1,0:-1].T.copy()
-
+    
     if len(bottom_semicircle) == 3:
         for c in range(len(bottom_semicircle)):
             for i in range(len(bottom_semicircle[0])):
                 shift = shift_amount(i)
                 bottom_semicircle[c][i] = np.roll(bottom_semicircle[c][i], shift, axis=0)
     else:
-        for i,row in enumerate(bottom_semicircle):
+        for i in range(len(bottom_semicircle)):
             shift = shift_amount(i)
             bottom_semicircle[i] = np.roll(bottom_semicircle[i],shift,axis=0)
     return bottom_semicircle.T
