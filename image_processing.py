@@ -8,13 +8,12 @@ def main():
 
     img_path = 'images/test360image.png'
     img = read_image(img_path)
+    
     greyscale_img = cv2.imread(img_path,cv2.IMREAD_GRAYSCALE)
     #show_image(img)
-    cropped_img = crop_image(img)
-    show_image(cropped_img)
-    write_image(cropped_img, 'testC.png')
-    show_image(semicircle_to_pyramid(cropped_img))
-    write_image(semicircle_to_pyramid(cropped_img), 'test1C.png')
+    cropped_img = crop_image(greyscale_img)
+    show_image(gen_panorama(cropped_img)[1])
+    #show_image(cropped_img)
     # try_out_find_angle()
 
 
@@ -117,9 +116,9 @@ def crop_image(img: np.ndarray) -> np.ndarray:
     '''
     return img[10:-20,90:-140].copy()
 
-def semicircle_to_pyramid(img: np.ndarray) -> np.ndarray:
+def gen_panorama(img: np.ndarray) -> np.ndarray:
     '''
-    Function to turn a semi circle into a pyramid for Tensorflow object detection. This app is for testing the methodology, 
+    Function to turn a 360 camera image into a stitched panorama. This app is for testing the methodology, 
     not for production purposes.
         Parameters:
             img (np.ndarray): Input image.
@@ -138,18 +137,24 @@ def semicircle_to_pyramid(img: np.ndarray) -> np.ndarray:
         delta_x = int(abs(285-x))
         return 285 - int(sqrt(285**2 - delta_x**2))
     
-    bottom_semicircle: np.ndarray= img[285:-1,0:-1].T.copy()
-    
+    bottom_semicircle: np.ndarray = img[285:-1,0:-1].T.copy()
+    top_semicircle: np.ndarray = img[0:285,0:-1].T.copy()
+    right_half: np.ndarray = img[0:-1,285:-1].copy()
+    left_half: np.ndarray = img[0:-1,0:285].copy()
+
+    #Colored Images
     if len(bottom_semicircle) == 3:
         for c in range(len(bottom_semicircle)):
             for i in range(len(bottom_semicircle[0])):
                 shift = shift_amount(i)
                 bottom_semicircle[c][i] = np.roll(bottom_semicircle[c][i], shift, axis=0)
+    #Greyscale Images
     else:
         for i in range(len(bottom_semicircle)):
             shift = shift_amount(i)
             bottom_semicircle[i] = np.roll(bottom_semicircle[i],shift,axis=0)
-    return bottom_semicircle.T
+            top_semicircle[i] = np.roll(top_semicircle[i],-shift,axis=0)
+    return bottom_semicircle.T, np.flipud(top_semicircle.T)
 
 if __name__ == '__main__':
     a = np.array([[1, 1, 1],
@@ -158,6 +163,6 @@ if __name__ == '__main__':
                   [4, 4, 4],
                   [5, 5, 5],
                   [6, 6, 6]])
-    # roll_test = np.roll(np.arange(9,dtype='int8').reshape(3,3),1,axis=0)
-    # print(roll_test)
+    
+
     main()
