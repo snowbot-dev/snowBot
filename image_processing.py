@@ -136,25 +136,41 @@ def gen_panorama(img: np.ndarray) -> np.ndarray:
         '''
         delta_x = int(abs(285-x))
         return 285 - int(sqrt(285**2 - delta_x**2))
+
+    def gen_bottom_half(bottom_semicircle: np.ndarray)-> np.ndarray:
+        #Colored Images
+        '''
+        Range: 270 deg to 90 deg decreasing/anti-clockwise order i.e 270, 180, 90.
+        '''
+        if len(bottom_semicircle) == 3:
+            for c in range(len(bottom_semicircle)):
+                for i in range(len(bottom_semicircle[0])):
+                    shift = shift_amount(i)
+                    bottom_semicircle[c][i] = np.roll(bottom_semicircle[c][i], shift, axis=0)
+        #Greyscale Images
+        else:
+            for i in range(len(bottom_semicircle)):
+                shift = shift_amount(i)
+                bottom_semicircle[i] = np.roll(bottom_semicircle[i],shift,axis=0)
+        return bottom_semicircle
     
-    bottom_semicircle: np.ndarray = img[285:-1,0:-1].T.copy()
-    top_semicircle: np.ndarray = img[0:285,0:-1].T.copy()
+    def gen_top_half(top_semicircle: np.ndarray)->np.ndarray:
+        '''
+        Range: 270 deg to 90 deg in increasing/clockwise order, i.e 270, 280, 360/0, 10, 90.
+        '''
+        #Greyscale
+        for i in range(len(top_semicircle)):
+                shift = shift_amount(i)
+                top_semicircle[i] = np.roll(top_semicircle[i],-shift,axis=0)
+        return top_semicircle
+    
+    bottom_half: np.ndarray = gen_bottom_half(img[285:-1,0:-1].T.copy())
+    top_half: np.ndarray = gen_top_half(img[0:285,0:-1].T.copy())
     right_half: np.ndarray = img[0:-1,285:-1].copy()
     left_half: np.ndarray = img[0:-1,0:285].copy()
 
-    #Colored Images
-    if len(bottom_semicircle) == 3:
-        for c in range(len(bottom_semicircle)):
-            for i in range(len(bottom_semicircle[0])):
-                shift = shift_amount(i)
-                bottom_semicircle[c][i] = np.roll(bottom_semicircle[c][i], shift, axis=0)
-    #Greyscale Images
-    else:
-        for i in range(len(bottom_semicircle)):
-            shift = shift_amount(i)
-            bottom_semicircle[i] = np.roll(bottom_semicircle[i],shift,axis=0)
-            top_semicircle[i] = np.roll(top_semicircle[i],-shift,axis=0)
-    return bottom_semicircle.T, np.flipud(top_semicircle.T)
+   
+    return bottom_half.T, np.flipud(top_half.T)
 
 if __name__ == '__main__':
     a = np.array([[1, 1, 1],
