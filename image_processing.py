@@ -2,7 +2,7 @@ import numpy as np
 import cv2 as cv2
 from matplotlib import pyplot as plt
 from math import atan, pi, sqrt
-
+from typing import Tuple
 
 def main():
 
@@ -12,7 +12,7 @@ def main():
     greyscale_img = cv2.imread(img_path,cv2.IMREAD_GRAYSCALE)
     #show_image(img)
     cropped_img = crop_image(greyscale_img)
-    show_image(gen_panorama(cropped_img)[1])
+    show_image(gen_panorama(cropped_img)[2])
     #show_image(cropped_img)
     # try_out_find_angle()
 
@@ -137,11 +137,13 @@ def gen_panorama(img: np.ndarray) -> np.ndarray:
         delta_x = int(abs(285-x))
         return 285 - int(sqrt(285**2 - delta_x**2))
 
-    def gen_bottom_half(bottom_semicircle: np.ndarray)-> np.ndarray:
+    def gen_bottom_and_right_half(bottom_semicircle: np.ndarray, right_semicircle: np.ndarray)-> Tuple:
+        
+        '''
+        Bottom Range: 270 deg to 90 deg decreasing/anti-clockwise order i.e 270, 180, 90.
+        Right Range: 0 deg to 180 deg in increasing/clockwise order.
+        '''
         #Colored Images
-        '''
-        Range: 270 deg to 90 deg decreasing/anti-clockwise order i.e 270, 180, 90.
-        '''
         if len(bottom_semicircle) == 3:
             for c in range(len(bottom_semicircle)):
                 for i in range(len(bottom_semicircle[0])):
@@ -152,7 +154,8 @@ def gen_panorama(img: np.ndarray) -> np.ndarray:
             for i in range(len(bottom_semicircle)):
                 shift = shift_amount(i)
                 bottom_semicircle[i] = np.roll(bottom_semicircle[i],shift,axis=0)
-        return bottom_semicircle
+                right_semicircle[i] = np.roll(right_semicircle[i],shift,axis=0)
+        return bottom_semicircle, right_semicircle
     
     def gen_top_half(top_semicircle: np.ndarray)->np.ndarray:
         '''
@@ -164,13 +167,13 @@ def gen_panorama(img: np.ndarray) -> np.ndarray:
                 top_semicircle[i] = np.roll(top_semicircle[i],-shift,axis=0)
         return top_semicircle
     
-    bottom_half: np.ndarray = gen_bottom_half(img[285:-1,0:-1].T.copy())
+    
+    bottom_half, right_half = gen_bottom_and_right_half(img[285:-1,0:-1].T.copy(),img[0:-1,285:-1].copy())
     top_half: np.ndarray = gen_top_half(img[0:285,0:-1].T.copy())
-    right_half: np.ndarray = img[0:-1,285:-1].copy()
     left_half: np.ndarray = img[0:-1,0:285].copy()
 
    
-    return bottom_half.T, np.flipud(top_half.T)
+    return bottom_half.T, np.flipud(top_half.T), right_half.T
 
 if __name__ == '__main__':
     a = np.array([[1, 1, 1],
