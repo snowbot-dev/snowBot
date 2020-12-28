@@ -4,17 +4,7 @@ from matplotlib import pyplot as plt
 from math import atan, pi, sqrt
 from typing import Tuple
 
-def main():
 
-    img_path = 'images/test360image.png'
-    img = read_image(img_path)
-    
-    greyscale_img = cv2.imread(img_path,cv2.IMREAD_GRAYSCALE)
-    #show_image(img)
-    cropped_img = crop_image(greyscale_img)
-    show_image(gen_panorama(cropped_img)[2])
-    #show_image(cropped_img)
-    # try_out_find_angle()
 
 
 def read_image(img_path):
@@ -157,31 +147,38 @@ def gen_panorama(img: np.ndarray) -> np.ndarray:
                 right_semicircle[i] = np.roll(right_semicircle[i],shift,axis=0)
         return bottom_semicircle, right_semicircle
     
-    def gen_top_half(top_semicircle: np.ndarray)->np.ndarray:
+    def gen_top_and_left_half(top_semicircle: np.ndarray, left_semicircle: np.ndarray)->np.ndarray:
         '''
-        Range: 270 deg to 90 deg in increasing/clockwise order, i.e 270, 280, 360/0, 10, 90.
+        Top Range: 270 deg to 90 deg in increasing/clockwise order, i.e 270, 280, 360/0, 10, 90.
+        Left Range: 360/ 0 deg to 180 deg in decreasing/anti-clockwise order.
         '''
         #Greyscale
         for i in range(len(top_semicircle)):
                 shift = shift_amount(i)
                 top_semicircle[i] = np.roll(top_semicircle[i],-shift,axis=0)
-        return top_semicircle
+                left_semicircle[i] = np.roll(left_semicircle[i],-shift,axis=0)
+        return top_semicircle,left_semicircle
     
     
     bottom_half, right_half = gen_bottom_and_right_half(img[285:-1,0:-1].T.copy(),img[0:-1,285:-1].copy())
-    top_half: np.ndarray = gen_top_half(img[0:285,0:-1].T.copy())
-    left_half: np.ndarray = img[0:-1,0:285].copy()
+    top_half, left_half = gen_top_and_left_half(img[0:285,0:-1].T.copy(),img[0:-1,0:285].copy())   
+     
 
    
-    return bottom_half.T, np.flipud(top_half.T), right_half.T
+    return bottom_half.T, np.flipud(top_half.T), right_half.T, np.flipud(left_half.T)
 
 if __name__ == '__main__':
-    a = np.array([[1, 1, 1],
-                  [2, 2, 2],
-                  [3, 3, 3],
-                  [4, 4, 4],
-                  [5, 5, 5],
-                  [6, 6, 6]])
+    img_path = 'images/test360image.png'
+    img = read_image(img_path)
     
+    greyscale_img = cv2.imread(img_path,cv2.IMREAD_GRAYSCALE)
+    #show_image(img)
+    cropped_img = crop_image(greyscale_img)
+    panorama = gen_panorama(cropped_img)
+    show_image(panorama[0])
+    show_image(panorama[1])
+    show_image(panorama[2])
+    show_image(panorama[3])
 
-    main()
+    #show_image(cropped_img)
+    # try_out_find_angle()
