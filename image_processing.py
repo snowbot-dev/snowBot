@@ -1,13 +1,10 @@
 import numpy as np
 import cv2 as cv2
 from matplotlib import pyplot as plt
-from math import atan, pi
+from math import atan, pi, sqrt
+from typing import Tuple
 
 
-def main():
-    img = read_image('news.jpg')
-    show_image(img)
-    # try_out_find_angle()
 
 
 def read_image(img_path):
@@ -38,7 +35,8 @@ def write_image(img, img_saving_path):
     """
     if isinstance(img, list):
         img = np.asarray(img, dtype=np.uint8)
-    else:
+    elif not isinstance(img, np.ndarray):
+        print(type(img))
         raise TypeError("img is neither a list nor a ndarray.")
 
     cv2.imwrite(img_saving_path, img)
@@ -82,6 +80,12 @@ def find_angle_of_pixel(locate_pixel, center_pixel):
     return '???'
 
 
+def slice_circle(circle_matrix):
+    return np.vsplit(circle_matrix, 2)
+
+def flatten_semi_circle(semi_circle_matrix):
+    return semi_circle_matrix.max(axis=1)
+
 def try_out_find_angle():
     print('N:', find_angle_of_pixel((2, 0), (2, 2)))
     print('Q1:', find_angle_of_pixel((3, 1), (2, 2)))
@@ -92,6 +96,89 @@ def try_out_find_angle():
     print('W:', find_angle_of_pixel((0, 2), (2, 2)))
     print('Q4:', find_angle_of_pixel((1, 1), (2, 2)))
 
+def crop_image(img: np.ndarray) -> np.ndarray:
+    '''
+    Crops out deadspace from input image. Function does not save image and has no other side effects.
+        Parameters:
+            img (np.ndarray): Image to crop
+        Returns:
+            cropped_img (np.ndarray): Cropped image
+    '''
+    return img[10:-20,90:-140].copy()
+
+def gen_panorama(img: np.ndarray) -> np.ndarray:
+    '''
+    Function to turn a 360 camera image into a stitched panorama. This app is for testing the methodology, 
+    not for production purposes.
+        Parameters:
+            img (np.ndarray): Input image.
+        Returns:
+            pyramid_img (np.ndarray): Pyramid representation of the lower half of the img.
+
+    '''
+    def shift_amount(x:int)->int:
+        '''
+        Calculates amount of pixels to shift based on the x coordinate on the diameter of the semicircle.
+            Parameters:
+                x(int): x coordinate on the diameter.
+            Returns:
+                shift(int): Amount of pixels needed to shift array.
+        '''
+        delta_x = int(abs(285-x))
+        return 285 - int(sqrt(285**2 - delta_x**2))
+
+    def gen_bottom_and_right_half(bottom_semicircle: np.ndarray, right_semicircle: np.ndarray)-> Tuple:
+        
+        '''
+        Bottom Range: 270 deg to 90 deg decreasing/anti-clockwise order i.e 270, 180, 90.
+        Right Range: 0 deg to 180 deg in increasing/clockwise order.
+        '''
+        #Colored Images
+        if len(bottom_semicircle) == 3:
+            for c in range(len(bottom_semicircle)):
+                for i in range(len(bottom_semicircle[0])):
+                    shift = shift_amount(i)
+                    bottom_semicircle[c][i] = np.roll(bottom_semicircle[c][i], shift, axis=0)
+        #Greyscale Images
+        else:
+            for i in range(len(bottom_semicircle)):
+                shift = shift_amount(i)
+                bottom_semicircle[i] = np.roll(bottom_semicircle[i],shift,axis=0)
+                right_semicircle[i] = np.roll(right_semicircle[i],shift,axis=0)
+        return bottom_semicircle, right_semicircle
+    
+    def gen_top_and_left_half(top_semicircle: np.ndarray, left_semicircle: np.ndarray)->np.ndarray:
+        '''
+        Top Range: 270 deg to 90 deg in increasing/clockwise order, i.e 270, 280, 360/0, 10, 90.
+        Left Range: 360/ 0 deg to 180 deg in decreasing/anti-clockwise order.
+        '''
+        #Greyscale
+        for i in range(len(top_semicircle)):
+                shift = shift_amount(i)
+                top_semicircle[i] = np.roll(top_semicircle[i],-shift,axis=0)
+                left_semicircle[i] = np.roll(left_semicircle[i],-shift,axis=0)
+        return top_semicircle,left_semicircle
+    
+    
+    bottom_half, right_half = gen_bottom_and_right_half(img[285:-1,0:-1].T.copy(),img[0:-1,285:-1].copy())
+    top_half, left_half = gen_top_and_left_half(img[0:285,0:-1].T.copy(),img[0:-1,0:285].copy())   
+     
+
+   
+    return bottom_half.T, np.flipud(top_half.T), right_half.T, np.flipud(left_half.T)
 
 if __name__ == '__main__':
-    main()
+    img_path = 'images/test360image.png'
+    img = read_image(img_path)
+    
+    greyscale_img = cv2.imread(img_path,cv2.IMREAD_GRAYSCALE)
+    #show_image(img)
+    cropped_img = crop_image(greyscale_img)
+    panorama = gen_panorama(cropped_img)
+    show_image(panorama[0])
+    show_image(panorama[1])
+    show_image(panorama[2])
+    show_image(panorama[3])
+
+    #show_image(cropped_img)
+    # try_out_find_angle()
